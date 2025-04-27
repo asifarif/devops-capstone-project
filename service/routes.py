@@ -151,7 +151,7 @@ def delete_accounts(account_id):
 ######################################################################
 def check_content_type(media_type):
     """
-    Checks that the media type is correct.
+    Checks that the media type is correct or not .
 
     Args:
         media_type (str): The expected media type.
