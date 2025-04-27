@@ -4,7 +4,7 @@ Account Service
 This microservice handles the lifecycle of Accounts
 """
 # pylint: disable=unused-import
-from flask import jsonify, request, make_response, abort, url_for   # noqa; F401
+from flask import jsonify, request, make_response, abort, url_for  # noqa; F401
 from service.models import Account
 from service.common import status  # HTTP Status Codes
 from . import app  # Import Flask application
@@ -15,7 +15,11 @@ from . import app  # Import Flask application
 ############################################################
 @app.route("/health")
 def health():
-    """Health Status"""
+    """
+    Returns the health status of the API.
+
+    This endpoint checks the service's health and returns a status message.
+    """
     return jsonify(dict(status="OK")), status.HTTP_200_OK
 
 
@@ -24,12 +28,15 @@ def health():
 ######################################################################
 @app.route("/")
 def index():
-    """Root URL response"""
+    """
+    Root URL response.
+
+    Returns a JSON response with service name and version.
+    """
     return (
         jsonify(
             name="Account REST API Service",
             version="1.0",
-            # paths=url_for("list_accounts", _external=True),
         ),
         status.HTTP_200_OK,
     )
@@ -41,8 +48,12 @@ def index():
 @app.route("/accounts", methods=["POST"])
 def create_accounts():
     """
-    Creates an Account
-    This endpoint will create an Account based the data in the body that is posted
+    Creates an Account.
+
+    This endpoint will create an Account based on the data posted in the request body.
+
+    Returns:
+        tuple: JSON response with the created account message and HTTP status code.
     """
     app.logger.info("Request to create an Account")
     check_content_type("application/json")
@@ -50,8 +61,6 @@ def create_accounts():
     account.deserialize(request.get_json())
     account.create()
     message = account.serialize()
-    # Uncomment once get_accounts has been implemented
-    # location_url = url_for("get_accounts", account_id=account.id, _external=True)
     location_url = "/"  # Remove once get_accounts has been implemented
     return make_response(
         jsonify(message), status.HTTP_201_CREATED, {"Location": location_url}
@@ -64,8 +73,9 @@ def create_accounts():
 @app.route("/accounts", methods=["GET"])
 def list_accounts():
     """
-    List all Accounts
-    This endpoint will list all Accounts
+    List all Accounts.
+
+    This endpoint will list all Accounts.
     """
     app.logger.info("Request to list Accounts")
 
@@ -75,15 +85,16 @@ def list_accounts():
     app.logger.info("Returning [%s] accounts", len(account_list))
     return jsonify(account_list), status.HTTP_200_OK
 
+
 ######################################################################
 # READ AN ACCOUNT
 ######################################################################
-
 @app.route("/accounts/<int:account_id>", methods=["GET"])
 def get_accounts(account_id):
     """
-    Reads an Account
-    This endpoint will read an Account based the account_id that is requested
+    Reads an Account based on the account_id that is requested.
+
+    Returns the account details or 404 if not found.
     """
     app.logger.info("Request to read an Account with id: %s", account_id)
     
@@ -100,8 +111,9 @@ def get_accounts(account_id):
 @app.route("/accounts/<int:account_id>", methods=["PUT"])
 def update_accounts(account_id):
     """
-    Update an Account
-    This endpoint will update an Account based on the posted data
+    Update an Account.
+
+    This endpoint will update an Account based on the posted data.
     """
     app.logger.info("Request to update an Account with id: %s", account_id)
 
@@ -113,15 +125,17 @@ def update_accounts(account_id):
     account.update()
 
     return account.serialize(), status.HTTP_200_OK
-    
+
+
 ######################################################################
 # DELETE AN ACCOUNT
 ######################################################################
 @app.route("/accounts/<int:account_id>", methods=["DELETE"])
 def delete_accounts(account_id):
     """
-    Delete an Account
-    This endpoint will delete an Account based on the account_id that is requested
+    Delete an Account based on the account_id that is requested.
+
+    Returns a 204 status code indicating the account was successfully deleted.
     """
     app.logger.info("Request to delete an Account with id: %s", account_id)
 
@@ -132,14 +146,16 @@ def delete_accounts(account_id):
     return "", status.HTTP_204_NO_CONTENT
 
 
-
 ######################################################################
 #  U T I L I T Y   F U N C T I O N S
 ######################################################################
-
-
 def check_content_type(media_type):
-    """Checks that the media type is correct"""
+    """
+    Checks that the media type is correct or not .
+
+    Args:
+        media_type (str): The expected media type.
+    """
     content_type = request.headers.get("Content-Type")
     if content_type and content_type == media_type:
         return
